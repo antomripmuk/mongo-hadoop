@@ -91,7 +91,10 @@ public class MongoSplitter {
         final DBObject q = conf.getQuery();
         
         log.info( "Calculating unsharded input splits on namespace '" + ns + "' with Split Key '" + splitKey.toString() + "' and a split size of '" + splitSize + "'mb per" );
-
+        boolean auth = coll.getDB().authenticate(uri.getUsername(), uri.getPassword());
+        if(!auth) {
+            throw new IllegalArgumentException("Unable to connect to collection.");
+        }
         final DBObject cmd = BasicDBObjectBuilder.start("splitVector", ns).
                                           add( "keyPattern", splitKey ).
                                           add( "force", false ). // force:True is misbehaving it seems
